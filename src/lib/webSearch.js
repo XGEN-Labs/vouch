@@ -1,13 +1,11 @@
-/** 轻量网页搜索（经 Vite 代理），给 LLM 作实时补充 */
+/** 轻量网页搜索（经自家后端），给 LLM 作实时补充 */
+import { searchWeb } from './api.js'
 
 export async function webSearch(query, { limit = 5 } = {}) {
   const q = String(query || '').trim()
   if (!q) return []
 
-  const url = `/api/search?q=${encodeURIComponent(q)}`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`search ${res.status}`)
-  const data = await res.json()
+  const data = await searchWeb(q)
   const items = Array.isArray(data?.results) ? data.results : []
   return items.slice(0, limit).map((r) => ({
     title: r.title || '',
