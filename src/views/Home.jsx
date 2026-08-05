@@ -7,7 +7,7 @@ import astrology from '../assets/astrology.png'
 import soundIcon from '../assets/sound.png'
 import { loadBgmPref, setBgmOn, startFireCrackle } from '../lib/bgm.js'
 
-export default function Home({ profile, go }) {
+export default function Home({ profile, go, onLogout }) {
   const name = profile?.flameName || '小火苗'
   const [bgmOn, setBgmOnState] = useState(loadBgmPref)
 
@@ -29,6 +29,11 @@ export default function Home({ profile, go }) {
     <div className="screen">
       <div className="topbar">
         <Logo />
+        {onLogout && (
+          <button type="button" className="home-exit" onClick={onLogout} aria-label="退出登录">
+            退出
+          </button>
+        )}
       </div>
 
       <div className="home-rail">

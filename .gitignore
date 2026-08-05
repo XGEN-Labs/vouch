@@ -7,3 +7,6 @@ dist
 *.log
 # nested clone; app uses src/data/bazi-skill instead
 .claude/skills/bazi/
+deploy/deploy.env
+data/
+invites/

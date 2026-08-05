@@ -1,9 +1,11 @@
-// 通过 Vite 代理调用 Claude（OpenAI 兼容接口），失败时由调用方模板兜底。
+// 经自家后端 /api/llm 调用 Claude（OpenAI 兼容接口），失败时由调用方模板兜底。
+// Key 只存在于服务端，前端拿不到也带不上。
+import { chatCompletions } from './api.js'
 import { nowContext } from './timeContext.js'
 import { webSearch, formatSearchResults, needsSearch } from './webSearch.js'
 import { formatChartForSkill } from './baziSkill.js'
 
-const MODEL = typeof __VOUCH_MODEL__ !== 'undefined' ? __VOUCH_MODEL__ : 'claude-sonnet-4-6'
+const MODEL = typeof __VOUCH_MODEL__ !== 'undefined' ? __VOUCH_MODEL__ : 'claude-sonnet-5'
 
 const SEARCH_TOOL = {
   type: 'function',
@@ -32,16 +34,7 @@ async function callChatAPI({ messages, maxTokens, tools, toolChoice }) {
     if (toolChoice) body.tool_choice = toolChoice
   }
 
-  const res = await fetch('/api/llm/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  })
-  if (!res.ok) {
-    const err = await res.text().catch(() => '')
-    throw new Error(`LLM ${res.status}: ${err.slice(0, 200)}`)
-  }
-  return res.json()
+  return chatCompletions(body)
 }
 
 function withTime(system) {
