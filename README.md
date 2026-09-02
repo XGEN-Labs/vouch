@@ -2,9 +2,9 @@
 
 数字人陪伴 app —— 用生日排八字 / 星盘，长出一只属于你的守护灵，再去串门认识别人。
 
-<video src="demovideo/demo.mp4" width="390" controls playsinline muted></video>
+[![演示](demovideo/preview.gif)](https://github.com/XGEN-Labs/vouch/blob/main/demovideo/demo.mp4)
 
-[完整演示视频](demovideo/demo.mp4)
+[完整演示视频（3 分 26 秒）](https://github.com/XGEN-Labs/vouch/blob/main/demovideo/demo.mp4)
 
 ## 跑起来
 
