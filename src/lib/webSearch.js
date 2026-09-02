@@ -1,11 +1,12 @@
-/** 轻量网页搜索（经 Vite 代理），给 LLM 作实时补充 */
+/** 轻量网页搜索（经 /api/search 代理），给 LLM 作实时补充 */
+import { inviteHeaders } from './invite.js'
 
 export async function webSearch(query, { limit = 5 } = {}) {
   const q = String(query || '').trim()
   if (!q) return []
 
   const url = `/api/search?q=${encodeURIComponent(q)}`
-  const res = await fetch(url)
+  const res = await fetch(url, { headers: inviteHeaders() })
   if (!res.ok) throw new Error(`search ${res.status}`)
   const data = await res.json()
   const items = Array.isArray(data?.results) ? data.results : []

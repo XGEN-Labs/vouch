@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Flame from '../components/Flame.jsx'
 import Logo from '../components/Logo.jsx'
 import BackButton from '../components/BackButton.jsx'
+import SendButton from '../components/SendButton.jsx'
 import { computeBazi } from '../bazi.js'
 import { GAN_PROFILE } from '../data/persona.js'
 import { chatLLM, pairAgentSystem } from '../lib/llm.js'
@@ -10,7 +11,8 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms))
 
 function pairReading(you, other) {
   const yGan = you.bazi.dayMaster, oGan = other.dayMaster
-  const yEl = GAN_PROFILE[yGan].element, oEl = GAN_PROFILE[oGan].element
+  const yEl = GAN_PROFILE[yGan]?.element || you.bazi?.dayMasterWuXing || ''
+  const oEl = GAN_PROFILE[oGan]?.element || other.dayMasterWuXing || ''
   const SHENG = { 木: '火', 火: '土', 土: '金', 金: '水', 水: '木' }
   const KE = { 木: '土', 土: '水', 水: '火', 火: '金', 金: '木' }
   const youName = you.userName || '你'
@@ -301,7 +303,10 @@ export default function Pairing({ profile, back, goHome }) {
             onChange={e => setDraft(e.target.value)}
             placeholder={scriptDone ? '跟他们说点什么…' : '听他们说完…'}
             disabled={!scriptDone || !!speaker}
+            enterKeyHint="send"
+            autoComplete="off"
           />
+          <SendButton disabled={!scriptDone || !!speaker || !draft.trim()} />
         </div>
       </form>
     </div>

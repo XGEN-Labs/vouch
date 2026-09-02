@@ -52,8 +52,12 @@ export function formatChartForSkill(bazi) {
   return [
     `四柱：年 ${col('year')} ／ 月 ${col('month')} ／ 日 ${col('day')} ／ 时 ${hourLine}`,
     `日主：${bazi.dayMaster}${bazi.dayMasterWuXing}，身${bazi.strength}`,
-    `喜用倾向：${(bazi.xiYong || []).join('、') || '—'}`,
-    `五行计数：金${bazi.wuXingCounts.金} 木${bazi.wuXingCounts.木} 水${bazi.wuXingCounts.水} 火${bazi.wuXingCounts.火} 土${bazi.wuXingCounts.土}`,
+    `旺衰依据：${(bazi.strengthAnalysis?.basis || []).join('；') || '—'}`,
+    `用神：${bazi.yongShen || '—'}；喜神：${bazi.xiShen || '—'}；喜用倾向：${(bazi.xiYong || []).join('、') || '—'}`,
+    `取用依据：${(bazi.favorableReasons || []).join('；') || '—'}`,
+    bazi.wuXingPercentages
+      ? `五行力量：金${bazi.wuXingPercentages.金}% 木${bazi.wuXingPercentages.木}% 水${bazi.wuXingPercentages.水}% 火${bazi.wuXingPercentages.火}% 土${bazi.wuXingPercentages.土}%`
+      : `五行计数：金${bazi.wuXingCounts.金} 木${bazi.wuXingCounts.木} 水${bazi.wuXingCounts.水} 火${bazi.wuXingCounts.火} 土${bazi.wuXingCounts.土}`,
     bazi.queWuXing?.length ? `五行偏缺：${bazi.queWuXing.join('、')}` : '五行无明显空缺',
     `月令：${bazi.monthZhi}，生肖：${bazi.shengXiao || ''}`,
     bazi.currentDaYun ? `当前大运：${bazi.currentDaYun.ganZhi}（${bazi.currentDaYun.startAge}岁起）` : '',

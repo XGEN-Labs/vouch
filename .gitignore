@@ -5,5 +5,15 @@ dist
 .env.local
 .env.*.local
 *.log
+.tmp-fn-env.yaml
 # nested clone; app uses src/data/bazi-skill instead
+.claude/skills/bazi/.pip
 .claude/skills/bazi/
+.tmp-taibu/
+.pip/
+deploy/deploy.env
+/data/
+/invites/
+# 原始录屏过大，仓库只留压缩后的 demo.mp4
+demovideo/*.mov
+demovideo/*.MOV

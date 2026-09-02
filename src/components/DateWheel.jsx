@@ -20,7 +20,7 @@ function clampToOptions(n, options) {
   return best
 }
 
-function WheelColumn({ options, value, onChange, pad = 2 }) {
+export function WheelColumn({ options, value, onChange, pad = 2 }) {
   const drag = useRef(null)
   const idx = Math.max(0, options.indexOf(value))
   const [editing, setEditing] = useState(false)
@@ -121,16 +121,16 @@ function WheelColumn({ options, value, onChange, pad = 2 }) {
   )
 }
 
-export default function DateWheel({ onConfirm }) {
+export default function DateWheel({ onConfirm, initial }) {
   const years = useMemo(() => {
     const now = new Date().getFullYear()
     return Array.from({ length: now - 1940 + 1 }, (_, i) => 1940 + i)
   }, [])
   const months = useMemo(() => Array.from({ length: 12 }, (_, i) => i + 1), [])
 
-  const [year, setYear] = useState(1995)
-  const [month, setMonth] = useState(9)
-  const [day, setDay] = useState(23)
+  const [year, setYear] = useState(initial?.y || 2000)
+  const [month, setMonth] = useState(initial?.m || 1)
+  const [day, setDay] = useState(initial?.d || 1)
 
   const days = useMemo(
     () => Array.from({ length: daysInMonth(year, month) }, (_, i) => i + 1),
