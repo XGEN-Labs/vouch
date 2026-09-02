@@ -3,24 +3,40 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "engines": {
+    "node": ">=20.11"
+  },
   "scripts": {
     "dev": "vite",
+    "dev:web": "vite",
+    "dev:api": "node --watch server/index.js",
+    "dev:full": "concurrently -n web,api -c cyan,magenta \"vite\" \"node --watch server/index.js\"",
     "build": "vite build",
     "check:bazi": "node scripts/check-bazi.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node server/index.js",
+    "invite": "node server/cli.js invite new"
   },
   "dependencies": {
     "@fontsource-variable/kalnia": "^5.3.0",
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.7.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "lunar-javascript": "^1.7.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
     "puppeteer-core": "^25.8.0",
     "vite": "^5.4.11"
   },
   "allowScripts": {
-    "esbuild@0.21.5": true
+    "esbuild@0.21.5": true,
+    "better-sqlite3": true
   }
 }

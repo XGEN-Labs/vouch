@@ -45,3 +45,13 @@ git -C .claude/skills/bazi pull
 cp .claude/skills/bazi/references/*.md src/data/bazi-skill/
 cp .claude/skills/bazi/SKILL.md src/data/bazi-skill/
 ```
+
+## 账号后端（可选）
+
+仓库里还有 `server/` + `deploy/`：邀请码注册、账号密码、SQLite 存档案，方便换设备找回火苗。开发时可 `npm run dev:full` 同时起前端和 8787。邀请码：
+
+```bash
+node server/cli.js invite new -n 1
+```
+
+部署步骤见 [`deploy/README.md`](deploy/README.md)。
