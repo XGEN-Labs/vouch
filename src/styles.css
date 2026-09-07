@@ -6,14 +6,6 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'Huiwen FangSong';
-  src: url('./assets/fonts/huiwen-fangsong/HuiwenFangSong.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
 :root {
   --bg: #050506;
   --ink: #f3f2ef;
@@ -27,8 +19,8 @@
   /* 中文统一黑体，避免装饰字体缺字 */
   --cn-display: 'PingFang SC', 'Heiti SC', 'STHeiti', 'Microsoft YaHei', sans-serif;
   --heiti: 'Heiti SC', 'STHeiti', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  /* 文艺展示字：汇文仿宋，缺字回退黑体 */
-  --fangsong: 'Huiwen FangSong', 'Heiti SC', 'STHeiti', 'PingFang SC', sans-serif;
+  /* 文艺展示字：优先系统宋体，减少手机首次打开的字体下载 */
+  --fangsong: 'Songti SC', 'STSong', 'Noto Serif CJK SC', serif;
   /* better-layout：边距用 4 的倍数；无边框图标/文字控件离边约 24px + safe-area */
   --space-2: 8px;
   --space-3: 12px;
