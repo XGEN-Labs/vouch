@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Starfield from './components/Starfield.jsx'
 import Onboarding from './views/Onboarding.jsx'
 import Home from './views/Home.jsx'
@@ -9,10 +9,10 @@ import TagManage from './views/TagManage.jsx'
 import Relations from './views/Relations.jsx'
 import DirectChat from './views/DirectChat.jsx'
 import FragmentDiary from './views/FragmentDiary.jsx'
-import InviteGate from './views/InviteGate.jsx'
+import Auth from './views/Auth.jsx'
 import { bindBgmUnlock, preloadAudio } from './lib/bgm.js'
 import { ensureSocialProfile } from './data/social.js'
-import { getInvite, unlockInvite } from './lib/invite.js'
+import { fetchProfile, me, pushProfile, setUnauthorizedHandler } from './lib/api.js'
 
 const KEY = 'vouch.profile'
 
@@ -30,9 +30,11 @@ function loadProfile() {
 }
 
 export default function App() {
-  const [inviteOk, setInviteOk] = useState(() => !!getInvite())
   const [profile, setProfileRaw] = useState(loadProfile)
   const [view, setView] = useState(profile ? 'home' : 'onboarding')
+  const [user, setUser] = useState(null)
+  const [authReady, setAuthReady] = useState(false)
+  const hydrated = useRef(false)
   const [bgVariant, setBgVariant] = useState('default')
   const [routeParams, setRouteParams] = useState({})
 
@@ -46,6 +48,44 @@ export default function App() {
   useEffect(() => {
     if (profile) localStorage.setItem(KEY, JSON.stringify(profile))
   }, [profile])
+
+  const hydrateUser = async (nextUser) => {
+    setUser(nextUser)
+    const cloud = await fetchProfile()
+    if (cloud) {
+      const normalized = ensureSocialProfile(cloud)
+      setProfileRaw(normalized)
+      setView('home')
+    } else {
+      const local = loadProfile()
+      if (local) {
+        setProfileRaw(local)
+        setView('home')
+        await pushProfile(local)
+      } else {
+        setProfileRaw(null)
+        setView('onboarding')
+      }
+    }
+    hydrated.current = true
+    setAuthReady(true)
+  }
+
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      hydrated.current = false
+      setUser(null)
+      setAuthReady(true)
+    })
+    me().then(hydrateUser).catch(() => setAuthReady(true))
+    return () => setUnauthorizedHandler(null)
+  }, [])
+
+  useEffect(() => {
+    if (!user || !profile || !hydrated.current) return undefined
+    const timer = setTimeout(() => pushProfile(profile).catch(() => {}), 700)
+    return () => clearTimeout(timer)
+  }, [user, profile])
 
   useEffect(() => {
     preloadAudio()
@@ -74,11 +114,21 @@ export default function App() {
   const darkViews = ['onboarding', 'memory', 'fragment', 'relations', 'tags', 'namecard']
   const healing = theme === 'healing' && !darkViews.includes(view)
 
-  if (!inviteOk) {
+  if (!authReady) {
     return (
       <div className="app-shell">
         <div className="phone theme-healing">
-          <InviteGate unlock={unlockInvite} onUnlocked={() => setInviteOk(true)} />
+          <div className="screen auth-loading"><span>正在找到你的火苗…</span></div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="app-shell">
+        <div className="phone theme-healing">
+          <Auth onAuthed={(u) => hydrateUser(u).catch(() => setAuthReady(true))} />
         </div>
       </div>
     )
@@ -87,6 +137,7 @@ export default function App() {
   return (
     <div className="app-shell">
       <div className={`phone${healing ? ' theme-healing' : ''}`}>
+        <button className="account-exit" type="button" aria-label="退出登录" title={`${user.username} · 退出登录`} onClick={() => { location.href = '/signout-with-chatgpt?return_to=/' }}>退出</button>
         <Starfield variant={view === 'onboarding' ? bgVariant : 'default'} />
         {view === 'onboarding' && <Onboarding onDone={finishOnboarding} onBgVariant={setBgVariant} />}
         {view === 'home' && <Home profile={profile} setProfile={setProfile} go={go} />}

@@ -38,7 +38,7 @@ export default function Memory({ profile, back, go }) {
   // 有碎片的日子 → 用那天碎片的标签色画圈
   const marked = useMemo(() => {
     const map = new Map()
-    for (const f of profile?.fragments || []) {
+    for (const f of (profile?.fragments || []).filter((item) => item.permissions?.display !== false)) {
       const [fy, fm, fd] = f.date.split('-').map(Number)
       if (fy === y && fm === m) map.set(fd, f.tagColor || '#a5c99b')
     }

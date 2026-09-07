@@ -15,11 +15,11 @@ export const isUnauthorized = (e) => e instanceof ApiError && e.status === 401
 let onUnauthorized = null
 export const setUnauthorizedHandler = (fn) => { onUnauthorized = fn }
 
-async function request(path, { method = 'GET', body, signal } = {}) {
+async function request(path, { method = 'GET', body, signal, headers } = {}) {
   const res = await fetch(`/api${path}`, {
     method,
     credentials: 'same-origin',
-    headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
+    headers: { ...(body === undefined ? {} : { 'Content-Type': 'application/json' }), ...(headers || {}) },
     body: body === undefined ? undefined : JSON.stringify(body),
     signal,
   })
@@ -56,6 +56,11 @@ export const logout = () => api.post('/auth/logout')
 export const fetchProfile = () => api.get('/profile').then(r => r.profile)
 export const pushProfile = (profile) => api.put('/profile', { profile })
 export const dropProfile = () => api.del('/profile')
+export const fetchVisibleFragments = () => api.get('/memory/fragments').then(r => r.fragments)
+export const fetchMatches = () => api.get('/matches').then(r => r.result)
+
+export const adminOverview = (key) => request('/admin/overview', { headers: { 'x-admin-key': key } })
+export const adminUser = (key, id) => request(`/admin/users/${encodeURIComponent(id)}`, { headers: { 'x-admin-key': key } })
 
 /** LLM 与搜索走同一套凭证，透传原始 Response 语义给调用方 */
 export const chatCompletions = (body) => api.post('/llm/chat/completions', body)

@@ -5,7 +5,7 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 
 import { config } from './config.js'
-import { getProfile, saveProfile, deleteProfile, countUsers } from './db.js'
+import { getProfile, saveProfile, deleteProfile, countUsers, listUserRecords } from './db.js'
 import {
   register, login, signToken, setAuthCookie, clearAuthCookie,
   requireAuth, publicUser,
@@ -13,6 +13,8 @@ import {
 import { rateLimit, byUser, byIp } from './rateLimit.js'
 import { forwardChat } from './llm.js'
 import { handleSearch } from './search.js'
+import { appProfileFromStored, buildIntegratedRecord, visibleFragments } from './memory.js'
+import { matchUser } from './matching.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const distDir = path.resolve(__dirname, '..', 'dist')
@@ -66,7 +68,7 @@ api.get('/auth/me', (req, res) => {
 
 api.get('/profile', requireAuth, (req, res) => {
   const row = getProfile(req.user.id)
-  res.json({ profile: row?.data ?? null, updatedAt: row?.updatedAt ?? null })
+  res.json({ profile: appProfileFromStored(row?.data), updatedAt: row?.updatedAt ?? null })
 })
 
 api.put('/profile', requireAuth, (req, res) => {
@@ -74,13 +76,56 @@ api.put('/profile', requireAuth, (req, res) => {
   if (!profile || typeof profile !== 'object') {
     return res.status(400).json({ error: 'profile required' })
   }
-  const row = saveProfile(req.user.id, profile)
+  const previous = getProfile(req.user.id)?.data
+  const record = buildIntegratedRecord(publicUser(req.user), profile, previous)
+  const row = saveProfile(req.user.id, record)
   res.json({ ok: true, updatedAt: row.updatedAt })
 })
 
 api.delete('/profile', requireAuth, (req, res) => {
   deleteProfile(req.user.id)
   res.json({ ok: true })
+})
+
+api.get('/memory/fragments', requireAuth, (req, res) => {
+  const row = getProfile(req.user.id)
+  res.json({ fragments: visibleFragments(row?.data) })
+})
+
+api.get('/matches', requireAuth, (req, res) => {
+  res.json({ result: matchUser(req.user.id, listUserRecords()) })
+})
+
+/* ---------- desktop data board ---------- */
+
+function requireAdmin(req, res, next) {
+  const supplied = String(req.get('x-admin-key') || '')
+  if (!config.adminKey || supplied !== config.adminKey) return res.status(401).json({ error: 'admin access required' })
+  next()
+}
+
+api.get('/admin/overview', requireAdmin, (_req, res) => {
+  const users = listUserRecords()
+  const records = users.filter((u) => u.record)
+  const allFragments = records.flatMap((u) => u.record?._app_profile?.fragments || [])
+  const visible = allFragments.filter((f) => f.permissions?.display !== false)
+  const active7d = users.filter((u) => u.lastSeenAt && Date.now() - new Date(u.lastSeenAt).getTime() < 7 * 864e5).length
+  res.json({
+    totals: { users: users.length, profiles: records.length, fragments: allFragments.length, visibleFragments: visible.length, hiddenFragments: allFragments.length - visible.length, active7d },
+    users: users.map((u) => ({
+      id: u.id, username: u.username, createdAt: u.createdAt, lastSeenAt: u.lastSeenAt, updatedAt: u.updatedAt,
+      nickname: u.record?.['00_Core_Profile']?.identity?.nickname || '',
+      city: u.record?.['00_Core_Profile']?.residence?.city || '',
+      fragmentCount: u.record?._app_profile?.fragments?.length || 0,
+      hiddenCount: (u.record?._app_profile?.fragments || []).filter((f) => f.permissions?.display === false).length,
+    })),
+  })
+})
+
+api.get('/admin/users/:id', requireAdmin, (req, res) => {
+  const row = listUserRecords().find((u) => String(u.id) === req.params.id)
+  if (!row) return res.status(404).json({ error: 'user not found' })
+  res.json({ user: row, matching: matchUser(row.id, listUserRecords()) })
 })
 
 /* ---------- LLM / 搜索：必须登录才能用，否则 Key 会被白嫖 ---------- */

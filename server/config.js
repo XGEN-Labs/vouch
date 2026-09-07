@@ -45,6 +45,7 @@ export const config = {
   tokenDays: num(process.env.VOUCH_TOKEN_DAYS, 30),
   // 本地 http 调试时设 VOUCH_SECURE_COOKIE=0，否则 cookie 发不出去
   secureCookie: process.env.VOUCH_SECURE_COOKIE !== '0',
+  adminKey: process.env.VOUCH_ADMIN_KEY || '',
 
   // 开放注册（不要邀请码）。内测默认关闭。
   openRegister: process.env.VOUCH_OPEN_REGISTER === '1',

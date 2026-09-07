@@ -75,6 +75,18 @@ export function getProfile(userId) {
   }
 }
 
+export function listUserRecords() {
+  return db.prepare(`
+    SELECT u.id, u.username, u.created_at, u.last_seen_at, p.data, p.updated_at
+    FROM users u LEFT JOIN profiles p ON p.user_id = u.id
+    ORDER BY COALESCE(p.updated_at, u.created_at) DESC
+  `).all().map((row) => {
+    let record = null
+    try { record = row.data ? JSON.parse(row.data) : null } catch { /* invalid legacy row */ }
+    return { id: row.id, username: row.username, createdAt: row.created_at, lastSeenAt: row.last_seen_at, updatedAt: row.updated_at, record }
+  })
+}
+
 export function saveProfile(userId, data) {
   const updatedAt = now()
   db.prepare(

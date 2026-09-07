@@ -55,3 +55,11 @@ node server/cli.js invite new -n 1
 ```
 
 部署步骤见 [`deploy/README.md`](deploy/README.md)。
+
+登录后，用户资料会以 `vouch-integrated/v2` 结构保存在后端，顶层与模拟数据保持一致：
+`00_Core_Profile` 至 `06_User_Summary`。记忆碎片进入
+`01_Self_Memory.experience.记忆碎片`，并同时写入权限判定；明确私密、敏感推断、
+第三方隐私、身份信息和敏感事件不会显示在用户端，也不会进入匹配。
+
+团队数据看板位于 `/admin`。在服务端设置 `VOUCH_ADMIN_KEY` 后，用该访问码进入，
+可以查看注册/活跃/建档数据、记忆可见性、用户结构化记录和匹配结果。管理访问码不要写进前端或提交到仓库。

@@ -578,11 +578,11 @@ export function findContact(profile, contactId) {
 }
 
 export function fragmentsOnDate(profile, dateStr) {
-  return (profile?.fragments || []).filter((f) => f.date === dateStr)
+  return (profile?.fragments || []).filter((f) => f.date === dateStr && f.permissions?.display !== false)
 }
 
 export function fragmentById(profile, id) {
-  return (profile?.fragments || []).find((f) => f.id === id) || null
+  return (profile?.fragments || []).find((f) => f.id === id && f.permissions?.display !== false) || null
 }
 
 export function fragmentsWith(profile, contactId) {
@@ -590,8 +590,8 @@ export function fragmentsWith(profile, contactId) {
   const name = findContact(profile, contactId)?.name?.split(' ')[0]
   return (profile?.fragments || [])
     .filter((f) => (
-      (f.with || []).includes(contactId)
-      || (name && (f.topics || []).some((t) => String(t).toLowerCase() === name.toLowerCase()))
+      f.permissions?.display !== false && ((f.with || []).includes(contactId)
+      || (name && (f.topics || []).some((t) => String(t).toLowerCase() === name.toLowerCase())))
     ))
     .slice()
     .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
@@ -636,5 +636,8 @@ export function captureChatFragment(profile, contact, userText) {
       `房间里四个人。你先开口：「${text}」。`,
       `我看着 ${name} 回你。这种刚刚认识、话已经接上的感觉，我想帮你留着。`,
     ],
+    privacy: 'normal',
+    source: 'explicit',
+    permissions: { agent_use: true, matching_use: true, display: true, external_share: false },
   })
 }
