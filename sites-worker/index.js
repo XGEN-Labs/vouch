@@ -88,6 +88,9 @@ export default {
     await ensureSchema(env.DB)
     const url=new URL(request.url)
     if(url.pathname.startsWith('/api/')) return api(request,env,url.pathname)
+    if (request.method === 'GET' && (url.pathname === '/admin' || url.pathname === '/admin/')) {
+      return env.ASSETS.fetch(new Request(new URL('/index.html', request.url), request))
+    }
     const assetResponse = await env.ASSETS.fetch(request)
     if (assetResponse.status !== 404 || request.method !== 'GET') return assetResponse
 

@@ -4926,12 +4926,13 @@ button.bigcard-avatar { cursor: pointer; }
 /* Desktop-only internal analytics board */
 .board-login, .data-board { min-height: 100vh; font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #202824; background: #f2f4ef; }
 .board-login { display: grid; place-items: center; padding: 32px; }
-.board-login form { width: min(420px, 100%); padding: 42px; border: 1px solid #d8ddd4; border-radius: 24px; background: #fff; box-shadow: 0 20px 70px rgba(37,49,42,.08); }
+.board-login form, .board-login-card { width: min(420px, 100%); padding: 42px; border: 1px solid #d8ddd4; border-radius: 24px; background: #fff; box-shadow: 0 20px 70px rgba(37,49,42,.08); }
 .board-kicker { color: #6d7f72; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 .board-login h1, .board-head h1 { margin: 10px 0 8px; font-size: 32px; letter-spacing: -.04em; }
 .board-login p { color: #708077; margin: 0 0 28px; }
 .board-login input, .board-section-head input { width: 100%; box-sizing: border-box; border: 1px solid #ccd4cc; border-radius: 12px; background: #fafbf9; padding: 13px 14px; font: inherit; }
 .board-login button, .board-head button { width: 100%; margin-top: 12px; border: 0; border-radius: 12px; background: #24382c; color: white; padding: 13px; font-weight: 700; cursor: pointer; }
+.board-signin { display: block; box-sizing: border-box; width: 100%; margin-top: 12px; border-radius: 12px; background: #24382c; color: white; padding: 13px; font-weight: 700; text-align: center; text-decoration: none; }
 .board-error { display: block; margin-top: 10px; color: #b34b3e; font-size: 13px; }
 .data-board { padding: 36px clamp(28px, 5vw, 80px) 60px; }
 .board-head { display: flex; justify-content: space-between; align-items: end; margin-bottom: 28px; }
