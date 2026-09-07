@@ -88,6 +88,14 @@ export default {
     await ensureSchema(env.DB)
     const url=new URL(request.url)
     if(url.pathname.startsWith('/api/')) return api(request,env,url.pathname)
-    return env.ASSETS.fetch(request)
+    const assetResponse = await env.ASSETS.fetch(request)
+    if (assetResponse.status !== 404 || request.method !== 'GET') return assetResponse
+
+    // Vite produces a single-page app. Sites' asset binding does not always
+    // map `/` or client-side routes such as `/admin` to index.html, so provide
+    // the HTML shell explicitly while preserving real missing-asset 404s.
+    const acceptsHtml = (request.headers.get('accept') || '').includes('text/html')
+    if (!acceptsHtml) return assetResponse
+    return env.ASSETS.fetch(new Request(new URL('/index.html', request.url), request))
   }
 }
