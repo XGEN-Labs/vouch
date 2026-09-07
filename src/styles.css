@@ -4919,6 +4919,8 @@ button.bigcard-avatar { cursor: pointer; }
 }
 
 .auth-loading { display: grid; place-items: center; color: #394856; font-size: 14px; }
+.auth-sites-signin { display: grid; place-items: center; width: calc(100% - 48px); margin: 24px; text-decoration: none; }
+.auth-privacy { margin: 0 36px; color: rgba(40,41,40,.58); font: 12px/1.6 var(--heiti); text-align: center; }
 .account-exit { position: absolute; z-index: 50; top: calc(10px + env(safe-area-inset-top, 0px)); right: 12px; border: 0; background: rgba(255,255,255,.55); color: #46515a; border-radius: 999px; padding: 7px 11px; font-size: 12px; backdrop-filter: blur(8px); }
 
 /* Desktop-only internal analytics board */
