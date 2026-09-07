@@ -23,7 +23,7 @@ export default function DataBoard() {
   useEffect(() => { load() }, [])
   const users = useMemo(() => (data?.users || []).filter((u) => `${u.username} ${u.nickname} ${u.city}`.toLowerCase().includes(query.toLowerCase())), [data, query])
 
-  if (!data) return <main className="board-login"><div className="board-login-card"><span className="board-kicker">Vouch · Data Board</span><h1>用户数据工作台</h1><p>{error || '正在读取内测数据…'}</p>{needsLogin && <a className="board-signin" href="/signin-with-chatgpt?return_to=/admin">管理员登录</a>}</div></main>
+  if (!data) return <main className="board-login"><div className="board-login-card"><span className="board-kicker">Vouch · Data Board</span><h1>用户数据工作台</h1><p>{error || '正在读取内测数据…'}</p>{needsLogin && <a className="board-signin" href="/signin-with-chatgpt?return_to=/admin.html">管理员登录</a>}</div></main>
 
   const t = data.totals
   const fragments = detail?.user?.record?._app_profile?.fragments || []
